@@ -1,0 +1,79 @@
+.map-container {
+  margin-top: 2rem;
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.map-placeholder {
+  margin-top: 2rem;
+  background: white;
+  padding: 3rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.map-placeholder-content {
+  text-align: center;
+  color: #7f8c8d;
+}
+
+.map-placeholder-content h3 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #34495e;
+}
+
+.map-info {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 4px;
+  text-align: left;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.map-info p {
+  margin: 0.5rem 0;
+  color: #34495e;
+}
+
+.info-window {
+  padding: 0.5rem;
+  max-width: 200px;
+}
+
+.info-window h4 {
+  margin: 0 0 0.5rem 0;
+  color: #2c3e50;
+  font-size: 1rem;
+}
+
+.info-price {
+  color: #27ae60;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin: 0.25rem 0;
+}
+
+.info-address {
+  color: #7f8c8d;
+  font-size: 0.85rem;
+  margin: 0.25rem 0;
+}
+
+.info-details {
+  color: #34495e;
+  font-size: 0.85rem;
+  margin: 0.25rem 0;
+}
+
+.info-distance {
+  color: #3498db;
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin: 0.5rem 0 0 0;
+}
