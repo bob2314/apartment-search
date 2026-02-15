@@ -13,8 +13,21 @@ const MapView = ({ apartments, center, onSelectApartment }) => {
 
   const defaultCenter = center || { lat: 40.7128, lng: -74.0060 }; // NYC default
 
-  // Use a demo key placeholder - users need to provide their own
-  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || 'YOUR_GOOGLE_MAPS_API_KEY';
+  // Get API key from environment variable
+  // No fallback - fail explicitly if not configured
+  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+  
+  if (!apiKey || apiKey === 'YOUR_GOOGLE_MAPS_API_KEY') {
+    return (
+      <div className="map-view">
+        <div style={{ padding: '2rem', textAlign: 'center', background: '#fff3cd', borderRadius: '8px' }}>
+          <h3>⚠️ Google Maps API Key Required</h3>
+          <p>Please configure your Google Maps API key in the .env file to use the map view.</p>
+          <p>See the README for instructions on obtaining an API key.</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleMarkerClick = (apartment) => {
     setActiveMarker(apartment.id);
@@ -36,8 +49,8 @@ const MapView = ({ apartments, center, onSelectApartment }) => {
               onClick={() => handleMarkerClick(apartment)}
               icon={{
                 url: activeMarker === apartment.id 
-                  ? 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'
-                  : 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
+                  ? 'https://maps.google.com/mapfiles/ms/icons/green-dot.png'
+                  : 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
               }}
             />
           ))}

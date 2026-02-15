@@ -122,10 +122,10 @@ const generateMockApartments = (location, radius, features = []) => {
   // Filter by radius (mock - in real app would use geolocation)
   let filtered = mockListings.filter(apt => apt.distance <= radius);
 
-  // Filter by features
+  // Filter by features - apartments must have ALL selected features
   if (features.length > 0) {
     filtered = filtered.filter(apt => 
-      features.some(feature => apt.features.includes(feature))
+      features.every(feature => apt.features.includes(feature))
     );
   }
 
@@ -138,10 +138,14 @@ const generateMockApartments = (location, radius, features = []) => {
 // Geocode location to coordinates
 // In a real app, this would use Google Geocoding API
 const geocodeLocation = async (location) => {
-  // Mock geocoding - returns NYC coordinates for any location
-  // In production, use Google Geocoding API
+  // Geocode location to coordinates
+  // In a real app, this would use Google Geocoding API
+  // Currently returns NYC coordinates as a placeholder
   return new Promise((resolve) => {
     setTimeout(() => {
+      // TODO: Replace with actual Google Geocoding API call
+      // For now, always returns NYC coordinates regardless of input
+      console.warn('Using mock geocoding - all locations resolve to NYC coordinates');
       resolve({
         lat: 40.7128,
         lng: -74.0060,

@@ -1,6 +1,18 @@
 import { useState } from 'react';
 import './SearchForm.css';
 
+// Feature display names mapping
+const FEATURE_LABELS = {
+  parking: 'Parking',
+  gym: 'Gym',
+  pool: 'Pool',
+  petFriendly: 'Pet Friendly',
+  laundry: 'Laundry',
+  airConditioning: 'Air Conditioning',
+  dishwasher: 'Dishwasher',
+  balcony: 'Balcony'
+};
+
 const SearchForm = ({ onSearch, isLoading }) => {
   const [location, setLocation] = useState('');
   const [radius, setRadius] = useState('10');
@@ -72,7 +84,7 @@ const SearchForm = ({ onSearch, isLoading }) => {
                 checked={features[feature]}
                 onChange={() => handleFeatureChange(feature)}
               />
-              <span>{feature.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</span>
+              <span>{FEATURE_LABELS[feature]}</span>
             </label>
           ))}
         </div>
