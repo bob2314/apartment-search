@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import SearchForm from './components/SearchForm';
 import ListingList from './components/ListingList';
 import Map from './components/Map';
@@ -16,7 +16,7 @@ function App() {
   const [fromCache, setFromCache] = useState(false);
   
   // Clear stale data on mount
-  useState(() => {
+  useEffect(() => {
     clearStaleData();
   }, []);
   
