@@ -1,146 +1,147 @@
 import { useState } from 'react';
-import { getAvailableAmenities } from '../services/listingAggregator';
 import './SearchForm.css';
 
+// Feature display names mapping
+const FEATURE_LABELS = {
+  parking: 'Parking',
+  gym: 'Gym',
+  pool: 'Pool',
+  petFriendly: 'Pet Friendly',
+  laundry: 'Laundry',
+  airConditioning: 'Air Conditioning',
+  dishwasher: 'Dishwasher',
+  balcony: 'Balcony'
+};
+
+const LISTING_SOURCES = {
+  apartmentsCom: 'Apartments.com',
+  googleMaps: 'Google Maps',
+  zillow: 'Zillow',
+  realtor: 'Realtor.com'
+};
+
 const SearchForm = ({ onSearch, isLoading }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [radius, setRadius] = useState(10);
-  const [selectedAmenities, setSelectedAmenities] = useState([]);
-  const [minPrice, setMinPrice] = useState('');
-  const [maxPrice, setMaxPrice] = useState('');
-  const [minBedrooms, setMinBedrooms] = useState('');
-  
-  const amenities = getAvailableAmenities();
-  
+  const [location, setLocation] = useState('');
+  const [radius, setRadius] = useState('10');
+  const [features, setFeatures] = useState({
+    parking: false,
+    gym: false,
+    pool: false,
+    petFriendly: false,
+    laundry: false,
+    airConditioning: false,
+    dishwasher: false,
+    balcony: false
+  });
+  const [sources, setSources] = useState({
+    apartmentsCom: true,
+    googleMaps: true,
+    zillow: true,
+    realtor: true
+  });
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    if (!searchTerm.trim()) {
-      alert('Please enter a city, state, or zipcode');
+    const selectedFeatures = Object.keys(features).filter(key => features[key]);
+    const selectedSources = Object.keys(sources).filter(key => sources[key]);
+
+    if (selectedSources.length === 0) {
       return;
     }
-    
+
     onSearch({
-      location: searchTerm.trim(),
+      location,
       radius: parseInt(radius),
-      filters: {
-        amenities: selectedAmenities,
-        minPrice: minPrice ? parseInt(minPrice) : undefined,
-        maxPrice: maxPrice ? parseInt(maxPrice) : undefined,
-        minBedrooms: minBedrooms ? parseInt(minBedrooms) : undefined
-      }
+      features: selectedFeatures,
+      sources: selectedSources
     });
   };
-  
-  const handleAmenityToggle = (amenity) => {
-    setSelectedAmenities(prev => 
-      prev.includes(amenity)
-        ? prev.filter(a => a !== amenity)
-        : [...prev, amenity]
-    );
+
+  const handleFeatureChange = (feature) => {
+    setFeatures(prev => ({
+      ...prev,
+      [feature]: !prev[feature]
+    }));
   };
-  
+
+  const handleSourceChange = (source) => {
+    setSources(prev => ({
+      ...prev,
+      [source]: !prev[source]
+    }));
+  };
+
+  const selectedSourceCount = Object.values(sources).filter(Boolean).length;
+
   return (
-    <div className="search-form">
-      <form onSubmit={handleSubmit}>
-        <div className="search-header">
-          <h1>Apartment Search</h1>
-          <p>Find your perfect apartment with advanced search filters</p>
-        </div>
-        
-        <div className="form-group">
-          <label htmlFor="location">City, State, or Zipcode</label>
-          <input
-            type="text"
-            id="location"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="e.g., New York, 10001, Austin TX"
-            disabled={isLoading}
-          />
-        </div>
-        
-        <div className="form-group">
-          <label htmlFor="radius">Search Radius: {radius} miles</label>
-          <input
-            type="range"
-            id="radius"
-            min="1"
-            max="50"
-            value={radius}
-            onChange={(e) => setRadius(e.target.value)}
-            disabled={isLoading}
-          />
-        </div>
-        
-        <div className="filters-section">
-          <h3>Filters</h3>
-          
-          <div className="filter-row">
-            <div className="form-group">
-              <label htmlFor="minPrice">Min Price ($)</label>
+    <form onSubmit={handleSubmit} className="search-form">
+      <div className="form-group">
+        <label htmlFor="location">Location (City, State, or Zip Code)</label>
+        <input
+          type="text"
+          id="location"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+          placeholder="e.g., New York, NY or 10001"
+          required
+        />
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="radius">Search Radius (miles)</label>
+        <select
+          id="radius"
+          value={radius}
+          onChange={(e) => setRadius(e.target.value)}
+        >
+          <option value="5">5 miles</option>
+          <option value="10">10 miles</option>
+          <option value="15">15 miles</option>
+          <option value="20">20 miles</option>
+          <option value="25">25 miles</option>
+          <option value="50">50 miles</option>
+        </select>
+      </div>
+
+      <div className="form-group features">
+        <label>Apartment Features</label>
+        <div className="checkbox-grid">
+          {Object.keys(features).map(feature => (
+            <label key={feature} className="checkbox-label">
               <input
-                type="number"
-                id="minPrice"
-                value={minPrice}
-                onChange={(e) => setMinPrice(e.target.value)}
-                placeholder="500"
-                min="0"
-                disabled={isLoading}
+                type="checkbox"
+                checked={features[feature]}
+                onChange={() => handleFeatureChange(feature)}
               />
-            </div>
-            
-            <div className="form-group">
-              <label htmlFor="maxPrice">Max Price ($)</label>
-              <input
-                type="number"
-                id="maxPrice"
-                value={maxPrice}
-                onChange={(e) => setMaxPrice(e.target.value)}
-                placeholder="5000"
-                min="0"
-                disabled={isLoading}
-              />
-            </div>
-            
-            <div className="form-group">
-              <label htmlFor="minBedrooms">Min Bedrooms</label>
-              <input
-                type="number"
-                id="minBedrooms"
-                value={minBedrooms}
-                onChange={(e) => setMinBedrooms(e.target.value)}
-                placeholder="1"
-                min="0"
-                max="10"
-                disabled={isLoading}
-              />
-            </div>
-          </div>
-          
-          <div className="amenities-section">
-            <h4>Amenities</h4>
-            <div className="amenities-grid">
-              {amenities.map(amenity => (
-                <label key={amenity} className="amenity-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={selectedAmenities.includes(amenity)}
-                    onChange={() => handleAmenityToggle(amenity)}
-                    disabled={isLoading}
-                  />
-                  <span>{amenity}</span>
-                </label>
-              ))}
-            </div>
-          </div>
+              <span>{FEATURE_LABELS[feature]}</span>
+            </label>
+          ))}
         </div>
-        
-        <button type="submit" className="search-button" disabled={isLoading}>
-          {isLoading ? 'Searching...' : 'Search Apartments'}
-        </button>
-      </form>
-    </div>
+      </div>
+
+      <div className="form-group features">
+        <label>Listing Sources</label>
+        <div className="checkbox-grid">
+          {Object.keys(sources).map(source => (
+            <label key={source} className="checkbox-label">
+              <input
+                type="checkbox"
+                checked={sources[source]}
+                onChange={() => handleSourceChange(source)}
+              />
+              <span>{LISTING_SOURCES[source]}</span>
+            </label>
+          ))}
+        </div>
+        {selectedSourceCount === 0 && (
+          <p className="input-hint error">Select at least one source.</p>
+        )}
+      </div>
+
+      <button type="submit" disabled={isLoading} className="search-button">
+        {isLoading ? 'Searching...' : 'Search Apartments'}
+      </button>
+    </form>
   );
 };
 
