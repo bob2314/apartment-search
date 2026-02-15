@@ -78,3 +78,12 @@
   background-color: #ccc;
   cursor: not-allowed;
 }
+
+.input-hint {
+  margin: 0.75rem 0 0 0;
+  font-size: 0.9rem;
+}
+
+.input-hint.error {
+  color: #c62828;
+}

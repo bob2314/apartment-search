@@ -25,6 +25,21 @@ const ApartmentList = ({ apartments, onSelectApartment }) => {
             <div className="apartment-details">
               <h3>{apartment.name}</h3>
               <p className="address">{apartment.address}</p>
+              {apartment.source && (
+                <div className="listing-source">
+                  <span className="source-badge">{apartment.source}</span>
+                  {apartment.listingUrl && (
+                    <a
+                      href={apartment.listingUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(event) => event.stopPropagation()}
+                    >
+                      Open listing
+                    </a>
+                  )}
+                </div>
+              )}
               <div className="apartment-info">
                 <span className="price">${apartment.price}/mo</span>
                 <span className="beds">{apartment.bedrooms} bd</span>

@@ -3,8 +3,11 @@
 const useApartmentCache = () => {
   const CACHE_KEY = 'apartment_search_cache';
   const CACHE_EXPIRY = 1000 * 60 * 30; // 30 minutes
+  const hasStorage = typeof window !== 'undefined' && window.localStorage;
 
   const getCachedResults = (searchParams) => {
+    if (!hasStorage) return null;
+
     try {
       const cache = localStorage.getItem(CACHE_KEY);
       if (!cache) return null;
@@ -29,6 +32,8 @@ const useApartmentCache = () => {
   };
 
   const setCachedResults = (searchParams, data) => {
+    if (!hasStorage) return;
+
     try {
       const cache = localStorage.getItem(CACHE_KEY);
       const parsed = cache ? JSON.parse(cache) : {};
@@ -46,6 +51,8 @@ const useApartmentCache = () => {
   };
 
   const clearCache = () => {
+    if (!hasStorage) return;
+
     try {
       localStorage.removeItem(CACHE_KEY);
     } catch (error) {

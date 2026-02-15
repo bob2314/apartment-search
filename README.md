@@ -33,7 +33,7 @@ A modern React-based apartment search application with comprehensive search feat
 
 ### Prerequisites
 
-- Node.js (v16 or higher)
+- Node.js (v20 recommended)
 - npm or yarn
 - Google Maps API key (for map functionality)
 
@@ -60,12 +60,15 @@ cp .env.example .env
 VITE_GOOGLE_MAPS_API_KEY=your_actual_api_key_here
 ```
 
+The key format should begin with `AIza...`. If it does not, map mode is intentionally disabled.
+
 **Getting a Google Maps API Key:**
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
 2. Create a new project or select an existing one
 3. Enable the "Maps JavaScript API"
-4. Create credentials (API Key)
-5. Copy the API key to your `.env` file
+4. Enable the "Geocoding API"
+5. Create credentials (API Key)
+6. Copy the API key to your `.env` file
 
 ### Running the Application
 
@@ -74,6 +77,12 @@ VITE_GOOGLE_MAPS_API_KEY=your_actual_api_key_here
 npm run dev
 ```
 The app will be available at `http://localhost:5173/`
+
+**Netlify Functions local dev (recommended for backend proxy testing):**
+```bash
+npx netlify dev
+```
+This runs your app + `netlify/functions/*` together so `/api/geocode` works locally.
 
 **Production build:**
 ```bash
@@ -120,7 +129,7 @@ apartment-search/
 ## Data Sources
 
 **Current Implementation:**
-The app currently uses mock data for demonstration purposes. The mock data includes realistic apartment listings with various features, locations, and prices.
+The app currently uses multi-source mock data for demonstration purposes (source-tagged listings for Apartments.com, Google Maps, Zillow, and Realtor.com). Results are generated around the searched location and filtered by radius and amenities.
 
 **Production Implementation:**
 In a production environment, integrate with apartment listing APIs such as:
@@ -131,6 +140,21 @@ In a production environment, integrate with apartment listing APIs such as:
 - Other third-party apartment listing aggregators
 
 Replace the `generateMockApartments` function in `src/utils/mockData.js` with actual API calls.
+
+## Backend Proxy (Netlify Functions)
+
+This project now includes a serverless geocoding proxy at:
+- `GET /api/geocode?location=<city/state/zip>`
+
+Files:
+- `netlify/functions/geocode.cjs`
+- `netlify.toml` redirect for `/api/geocode`
+
+Environment variables:
+- `VITE_GOOGLE_MAPS_API_KEY` (client-side map rendering key)
+- `GOOGLE_MAPS_SERVER_API_KEY` (server-side geocoding key, recommended)
+
+In Netlify production, set both variables in Site Settings -> Environment Variables.
 
 ## Caching Strategy
 

@@ -13,15 +13,24 @@ const SearchPage = () => {
   const [selectedApartment, setSelectedApartment] = useState(null);
   const [mapCenter, setMapCenter] = useState(null);
   const [viewMode, setViewMode] = useState('list'); // 'list' or 'map'
+  const [errorMessage, setErrorMessage] = useState('');
+  const [lastSearch, setLastSearch] = useState(null);
 
   const { getCachedResults, setCachedResults } = useApartmentCache();
 
   const handleSearch = async (searchParams) => {
     setIsLoading(true);
     setHasSearched(true);
+    setErrorMessage('');
+
+    const normalizedSearch = {
+      ...searchParams,
+      location: searchParams.location.trim().replace(/\s+/g, ' ')
+    };
+    setLastSearch(normalizedSearch);
 
     // Check cache first
-    const cachedResults = getCachedResults(searchParams);
+    const cachedResults = getCachedResults(normalizedSearch);
     if (cachedResults) {
       console.log('Using cached results');
       setApartments(cachedResults.apartments);
@@ -31,31 +40,34 @@ const SearchPage = () => {
     }
 
     try {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
       // Geocode the location
-      const coordinates = await geocodeLocation(searchParams.location);
+      const coordinates = await geocodeLocation(
+        normalizedSearch.location,
+        import.meta.env.VITE_GOOGLE_MAPS_API_KEY
+      );
       setMapCenter(coordinates);
 
       // Fetch apartments (mock data)
-      // In production, this would call multiple listing APIs
-      const results = generateMockApartments(
-        searchParams.location,
-        searchParams.radius,
-        searchParams.features
-      );
+      const results = generateMockApartments({
+        location: normalizedSearch.location,
+        radius: normalizedSearch.radius,
+        features: normalizedSearch.features,
+        sources: normalizedSearch.sources,
+        center: coordinates
+      });
 
       setApartments(results);
+      setSelectedApartment(null);
 
       // Cache the results
-      setCachedResults(searchParams, {
+      setCachedResults(normalizedSearch, {
         apartments: results,
         center: coordinates
       });
     } catch (error) {
       console.error('Error searching apartments:', error);
       setApartments([]);
+      setErrorMessage('Could not complete search right now. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -79,6 +91,14 @@ const SearchPage = () => {
 
         {hasSearched && (
           <>
+            {errorMessage && <p className="search-error">{errorMessage}</p>}
+            {lastSearch && (
+              <div className="search-meta">
+                <span>{apartments.length} results</span>
+                <span>{lastSearch.location}</span>
+                <span>{lastSearch.radius} mile radius</span>
+              </div>
+            )}
             <div className="view-toggle">
               <button
                 className={viewMode === 'list' ? 'active' : ''}

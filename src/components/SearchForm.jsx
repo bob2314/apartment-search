@@ -13,6 +13,13 @@ const FEATURE_LABELS = {
   balcony: 'Balcony'
 };
 
+const LISTING_SOURCES = {
+  apartmentsCom: 'Apartments.com',
+  googleMaps: 'Google Maps',
+  zillow: 'Zillow',
+  realtor: 'Realtor.com'
+};
+
 const SearchForm = ({ onSearch, isLoading }) => {
   const [location, setLocation] = useState('');
   const [radius, setRadius] = useState('10');
@@ -26,14 +33,27 @@ const SearchForm = ({ onSearch, isLoading }) => {
     dishwasher: false,
     balcony: false
   });
+  const [sources, setSources] = useState({
+    apartmentsCom: true,
+    googleMaps: true,
+    zillow: true,
+    realtor: true
+  });
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const selectedFeatures = Object.keys(features).filter(key => features[key]);
+    const selectedSources = Object.keys(sources).filter(key => sources[key]);
+
+    if (selectedSources.length === 0) {
+      return;
+    }
+
     onSearch({
       location,
       radius: parseInt(radius),
-      features: selectedFeatures
+      features: selectedFeatures,
+      sources: selectedSources
     });
   };
 
@@ -43,6 +63,15 @@ const SearchForm = ({ onSearch, isLoading }) => {
       [feature]: !prev[feature]
     }));
   };
+
+  const handleSourceChange = (source) => {
+    setSources(prev => ({
+      ...prev,
+      [source]: !prev[source]
+    }));
+  };
+
+  const selectedSourceCount = Object.values(sources).filter(Boolean).length;
 
   return (
     <form onSubmit={handleSubmit} className="search-form">
@@ -88,6 +117,25 @@ const SearchForm = ({ onSearch, isLoading }) => {
             </label>
           ))}
         </div>
+      </div>
+
+      <div className="form-group features">
+        <label>Listing Sources</label>
+        <div className="checkbox-grid">
+          {Object.keys(sources).map(source => (
+            <label key={source} className="checkbox-label">
+              <input
+                type="checkbox"
+                checked={sources[source]}
+                onChange={() => handleSourceChange(source)}
+              />
+              <span>{LISTING_SOURCES[source]}</span>
+            </label>
+          ))}
+        </div>
+        {selectedSourceCount === 0 && (
+          <p className="input-hint error">Select at least one source.</p>
+        )}
       </div>
 
       <button type="submit" disabled={isLoading} className="search-button">

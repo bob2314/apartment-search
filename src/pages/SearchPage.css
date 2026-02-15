@@ -34,6 +34,28 @@
   justify-content: center;
 }
 
+.search-meta {
+  display: flex;
+  gap: 0.75rem;
+  margin: 0 0 1rem 0;
+  flex-wrap: wrap;
+}
+
+.search-meta span {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+}
+
+.search-error {
+  margin: 0 0 1rem 0;
+  color: #ffd7d7;
+  font-weight: 600;
+}
+
 .view-toggle button {
   padding: 0.75rem 1.5rem;
   background: white;
